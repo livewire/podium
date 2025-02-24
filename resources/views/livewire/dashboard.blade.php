@@ -2,11 +2,12 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\Url;
+use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
 use App\Models\Question;
 
-new #[Layout('components.layouts.app')] class extends Component {
+new #[Layout('components.layouts.app'), Lazy] class extends Component {
     #[Url]
     public $sortBy = 'votes';
 
