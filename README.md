@@ -47,4 +47,4 @@ podium/
 ## References & documentation
 
 - [Flux "Q&A Board" demo page →](https://fluxui.dev/demos)
-- [Livewire $js() documentation](https://livewire.laravel.com/docs/actions#javascript-actions)
+- [Livewire $js() documentation →](https://livewire.laravel.com/docs/actions#javascript-actions)
