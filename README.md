@@ -2,6 +2,8 @@
 
 An example app for fielding questions from your audience.
 
+[!A screenshot of the app](/screenshot.png)
+
 ## Installation
 
 After cloning this repo, run the following commands from your project root:
