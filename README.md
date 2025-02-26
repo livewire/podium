@@ -44,7 +44,7 @@ podium/
                 └── create.blade.php # Create question button & modal
 ```
 
-## References
+## External link references
 
 - [Flux "Q&A Board" demo page →](https://fluxui.dev/demos)
 - [Livewire $js() documentation](https://livewire.laravel.com/docs/actions#javascript-actions)
