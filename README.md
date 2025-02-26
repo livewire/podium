@@ -25,3 +25,26 @@ Now, open the project in your browser (Typically `http://podium.test`) and use t
 User: test@example.com
 Pass: password
 ```
+
+## Project Structure
+
+The application follows a standard Laravel structure with key files organized as follows:
+
+```
+podium/
+├── routes/
+│   └── web.php                      # Main web routes
+│
+└── resources/
+    └── views/
+        ├── dashboard.blade.php      # Question dashboard page
+        └── livewire/
+            └── question/
+                ├── show.blade.php   # Question list item
+                └── create.blade.php # Create question button & modal
+```
+
+## References
+
+- [Flux "Q&A Board" demo page →](https://fluxui.dev/demos)
+- [Livewire $js() documentation](https://livewire.laravel.com/docs/actions#javascript-actions)
