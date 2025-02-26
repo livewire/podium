@@ -20,7 +20,7 @@ class QuestionFactory extends Factory
         return [
             'user_id' => User::factory(),
             'content' => $this->faker->sentence(10),
-            'votes' => $this->faker->numberBetween(0, 100),
+            'is_approved' => $this->faker->boolean(80),
         ];
     }
 }

@@ -1,89 +1,106 @@
 <?php
 
-use Livewire\Volt\Component;
-use Livewire\Attributes\Url;
-use Livewire\Attributes\Lazy;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
+use Livewire\Volt\Component;
 use App\Models\Question;
 
-new #[Layout('components.layouts.app'), Lazy] class extends Component {
+new #[Layout('components.layouts.app')] class extends Component {
     #[Url]
-    public $sortBy = 'votes';
+    public $filter = 'all';
 
     #[Url]
-    public $sortDirection = 'desc';
-
-    public $content = '';
+    public $sort = 'popular';
 
     #[Computed]
     public function questions()
     {
-        return Question::orderBy($this->sortBy, $this->sortDirection)->get();
+        $query = Question::query();
+
+        // Apply filters...
+        if ($this->filter === 'unapproved') {
+            $query->where('is_approved', false);
+        } elseif ($this->filter === 'approved') {
+            $query->where('is_approved', true);
+        }
+
+        // Apply sorting...
+        switch ($this->sort) {
+            case 'newest':
+                $query->latest();
+                break;
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'popular':
+                $query->withCount('votes')->orderByDesc('votes_count');
+                break;
+        }
+
+        return $query->get();
     }
 
-    public function vote(Question $question)
+    public function delete(Question $question)
     {
-        $question->increment('votes');
-    }
+        // In a real app, you would authorize the user first...
 
-    public function save()
-    {
-        $data = $this->validate([
-            'content' => 'required|string|max:255',
-        ]);
+        $question->delete();
 
-        auth()->user()->questions()->create($data);
-
-        $this->reset('content');
-
-        Flux::modals()->close();
+        Flux::toast('Question deleted', variant: 'success');
     }
 }; ?>
 
-<div class="space-y-6">
-    <flux:heading size="xl">Welcome!</flux:heading>
-    <flux:subheading>Here's what's happening today</flux:subheading>
-    <flux:separator text="Questions" />
+<div>
+    <div class="-mx-8 -mt-6 lg:-mt-8 sm:border-b border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+        <div class="max-w-7xl px-6 sm:px-8 py-3 mx-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-2">
+            <div class="max-sm:hidden flex items-baseline gap-3">
+                <flux:heading size="lg">Questions</flux:heading>
 
-    <div class="flex items-center gap-2">
-        <flux:spacer />
+                <flux:text>{{ $this->questions->count() }}</flux:text>
+            </div>
 
-        <flux:input.group class="max-w-46">
-            <flux:input.group.prefix>Sort by</flux:input.group.prefix>
+            <flux:spacer />
 
-            <flux:select wire:model.live="sortBy" size="sm">
-                <flux:select.option value="votes">Votes</flux:select.option>
-                <flux:select.option value="created_at">Date</flux:select.option>
-            </flux:select>
-        </flux:input.group>
+            <div class="flex items-center gap-2">
+                <flux:select variant="listbox" wire:model.live="filter" class="sm:max-w-fit">
+                    <x-slot name="trigger">
+                        <flux:select.button size="sm">
+                            <flux:icon.funnel variant="micro" class="mr-2 text-zinc-400" />
 
-        <flux:select wire:model.live="sortDirection" size="sm" class="max-w-26">
-            <flux:select.option value="asc">Asc</flux:select.option>
-            <flux:select.option value="desc">Desc</flux:select.option>
-        </flux:select>
+                            <flux:select.selected />
+                        </flux:select.button>
+                    </x-slot>
 
-        <flux:button x-on:click="$flux.modal('create-question').show()" icon="plus" size="sm" variant="primary">New Question</flux:button>
+                    <flux:select.option value="all">All</flux:select.option>
+                    <flux:select.option value="unapproved">Unapproved</flux:select.option>
+                    <flux:select.option value="approved">Approved</flux:select.option>
+                </flux:select>
+
+                <flux:select variant="listbox" wire:model.live="sort" class="sm:max-w-fit">
+                    <x-slot name="trigger">
+                        <flux:select.button size="sm">
+                            <flux:icon.arrows-up-down variant="micro" class="mr-2 text-zinc-400" />
+
+                            <flux:select.selected />
+                        </flux:select.button>
+                    </x-slot>
+
+                    <flux:select.option value="popular">Most popular</flux:select.option>
+                    <flux:select.option value="newest">Newest</flux:select.option>
+                    <flux:select.option value="oldest">Oldest</flux:select.option>
+                </flux:select>
+            </div>
+
+            <livewire:question.create @created="$refresh" />
+        </div>
     </div>
 
-    <div class="grid grid-cols-4 gap-4">
+    <div class="min-h-4 sm:min-h-10"></div>
+
+    <div class="mx-auto max-w-lg max-sm:-mx-2 grid grid-cols-1 gap-1">
         @foreach ($this->questions as $question)
-            <flux:card class="flex flex-col" wire:key="question-{{ $question->id }}">
-                <flux:subheading size="sm">{{ $question->user->name }}</flux:subheading>
-                <flux:heading>{{ $question->content }}</flux:heading>
-                <flux:spacer class="min-h-4" />
-                <flux:button wire:click="vote({{ $question->id }})">{{ $question->votes }} votes</flux:button>
-            </flux:card>
+            <livewire:question.show :question="$question" :key="$question->id" />
         @endforeach
     </div>
-
-    <flux:modal name="create-question" variant="flyout">
-        <form wire:submit="save" class="space-y-4">
-            <flux:heading size="lg">Submit a question</flux:heading>
-
-            <flux:textarea wire:model="content" label="Question" />
-
-            <flux:button type="submit" variant="primary">Submit</flux:button>
-        </form>
-    </flux:modal>
 </div>

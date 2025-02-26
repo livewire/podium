@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(10)->create();
+        User::factory(25)->create();
 
         User::factory()->create([
             'name' => 'Test User',
@@ -24,6 +24,14 @@ class DatabaseSeeder extends Seeder
             Question::factory(random_int(1, 5))->create([
                 'user_id' => $user->id,
             ]);
+        });
+
+        User::all()->each(function (User $user) {
+            Question::all()->random(10)->each(function (Question $question) use ($user) {
+                $question->votes()->create([
+                    'user_id' => $user->id,
+                ]);
+            });
         });
     }
 }
