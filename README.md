@@ -2,7 +2,7 @@
 
 An example app for fielding questions from your audience.
 
-[!A screenshot of the app](/screenshot.png)
+![A screenshot of the app](/screenshot.png)
 
 ## Installation
 
