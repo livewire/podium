@@ -28,7 +28,7 @@ Pass: password
 
 ## Project Structure
 
-The application follows a standard Laravel structure with key files organized as follows:
+These are the key files to reference in this project:
 
 ```
 podium/
