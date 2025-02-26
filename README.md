@@ -26,7 +26,7 @@ User: test@example.com
 Pass: password
 ```
 
-## Project Structure
+## Project structure
 
 These are the key files to reference in this project:
 
@@ -44,7 +44,7 @@ podium/
                 └── create.blade.php # Create question button & modal
 ```
 
-## External link references
+## References & documentation
 
 - [Flux "Q&A Board" demo page →](https://fluxui.dev/demos)
 - [Livewire $js() documentation](https://livewire.laravel.com/docs/actions#javascript-actions)
